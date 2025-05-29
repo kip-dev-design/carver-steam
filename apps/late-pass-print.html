@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carver Steam - Late Pass Print</title>
+    <link rel="top_url" href="https://sites.google.com/apsk12.org/carver-steam/late-pass-print" crossorigin="anonymous">
+    <link rel="manifest" href="" crossorigin="anonymous">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <style>#overlay {
+    background: no-repeat scroll center center #fff;
+    position: absolute;
+    z-index: 999999;
+    height: 100%;
+    width: 100%;
+    opacity: .5; /* in FireFox */ 
+    filter: alpha(opacity=50); /* in IE */
+}.bottom-0,.row.nav{bottom:0!important}.container,.step{position:relative;width:100%}.row.nav{position:absolute!important;width:100%}.container{height:100%;padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto}.step{top:0;min-height:400px;display:none}.step.active{display:block}.step.active.next{left:0;-webkit-animation:.1s linear forwards right-to-left2;animation:.1s linear forwards right-to-left2}.step.active.prev{left:0;-webkit-animation:.1s linear forwards left-to-right;animation:.1s linear forwards left-to-right}@-webkit-keyframes left-to-right{from{left:-100%}to{left:0}}@-webkit-keyframes left-to-right2{from{left:-100%}to{left:0}}@-webkit-keyframes right-to-left{from{left:0}to{left:100%}}@-webkit-keyframes right-to-left2{from{left:100%}to{left:0}}@keyframes left-to-right{from{left:-100%}to{left:0}}@keyframes right-to-left{from{left:0}to{left:100%}}@keyframes right-to-left2{from{left:100%}to{left:0}}</style>
+    <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/Johnsonapsk12/dymo.label.framework/js.js"></script>
+    <script src="https://script.google.com/macros/s/AKfycbx-TFsVdoGlIz-q84PUQ6AhZoR_z_uU6IQ35Iv9LGwZyf_aFV83ReZ6v_01JV1YMVh6/exec?action=get_js"></script>
+
+</head>
+
+<body>
+    <div id="overlay2"></div>
+    
+    <div class="container mt-0">
+        <div class="row">
+            <div class="col">
+                <div class="mb-3 position-relative ">
+                    <div class="position-relative ">
+                        <div id="pass" class="jumbotron jumbotron-fluid justify-content-center" style="display: none;">
+                            <div class="container">
+                                <h1 class="display-4">Pass Printing</h1>
+                                <h3 id="studentname" class="display-6">Student Name</h3>
+                                <h4 id="currentperiod" class="display-6">Period</h4>
+                                <h4 id="timestamp" class="display-6">Time Stamp</h4>
+                                <p id="studentreason" class="lead">Reason: Woke up late</p>
+                                <p class="lead">This Page Will Auto Refresh!</p>
+                             </div>
+                            <div id="qrcode"></div>
+
+                        </div>
+                        <form>
+                            
+                            <div class="form-row justify-content-center">
+                                <div class="alert alert-info" role="alert">Fill out student info pass will populate <a href="https://sites.google.com/apsk12.org/carver-steam/print-pass-dash" target="_blank">print list!</a></div>
+                            </div>
+                            <!-- Step Student Name -->
+                            <div class="step active">
+                                <div class="form-row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="student_name">Student #:</label>
+                                        <input type="text" class="form-control form-control-lg" id="student_name" name="student_name" aria-describedby="studentHelpBlock" required placeholder="2031234" maxlength="7">
+                                        <small id="studentHelpBlock" class="form-text text-muted">
+                                            Start by typing 7 digit Student number above! 😒
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+                            <!-- Step Reason -->
+                            <div class="step">
+                                <h3>Reason</h3>
+                                <div id="reasons_list" class="list-group">
+                                    <input type="hidden" class="form-control" id="reason">
+
+                                </div>
+                            </div>
+                            
+                             <!-- Step Student Name -->
+                            <div class="step">
+                                <div class="form-row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="student_name">Teacher Name</label>
+                                        <input type="text" class="form-control form-control-lg" id="teachername" name="teachername" required placeholder="Future Gradute!">
+                                        <small id="teachernameHelpBlock" class="form-text text-muted">
+                                            Start typing Teacher last name! 📚
+                                        </small>
+                                    </div>
+                                </div>
+                                <input type='hidden' class="form-control" id="action" value="null" />
+                            </div>
+                            
+                            <!-- Step Sublist -->
+                            <div class="step">
+                                <div class="form-group">
+                                    <label for="teachername" class="form-label">Name</label>
+                                    <input type="text" class="form-control form-control-lg" id="teachername" placeholder="Washington Carver">
+                                    <input type='hidden' id="teacher_firstname" value="null" />
+                                    <input type='hidden' id="teacher_lastname" value="null" />
+                                    <input type='hidden' id="teacher_id" value="null" />
+                                </div>
+                            </div>
+                            
+                            <div class="form-row justify-content-center">
+                                <p class="text-uppercase fw-semibold">Choose Carver Choose Greatness</p>
+                            </div>
+                            
+                            <input type="hidden" class="form-control" id="firstname" name="firstname">
+                            <input type="hidden" class="form-control" id="lastname" name="lastname">
+                            <input type="hidden" class="form-control" id="teacher" name="teacher">
+                            <input type="hidden" class="form-control" id="studentnumber" name="studentnumber">
+                            <input type="hidden" class="form-control" id="grade" name="grade">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function($) {
+            $.fn.extend({
+                template: function(d) {
+                    return this.map(function() {
+                        var t = $(this).html();
+                        var r = t.replace(/\$\{(\w+)\}/g, function(m, k) {
+                            return d[k] !== undefined ? d[k] : m;
+                        });
+                        return $(document.createElement('div')).html(r).children().get();
+                    });
+                }
+            });
+        })(jQuery);
+
+    </script>
+    <script>
+        $(function() {
+            var g = {};
+						var yearstart = "08-01-2024";
+						var steps = $(".step");
+      			var currentStep = 0;
+            
+						$(document).ready(function() {
+						//console.log(currentRespones(yearstart));return;
+								$.ajax({
+									url: getbatchsheets(["All_Staff", "All_Students"], "1HhUzi3vSi3Duk7aIdJKkE97HskNAbEaSAhurj387Iss"),
+									type: "GET",
+									success: function (e, a, s) {
+											g = Object.assign(...e.valueRanges.map(e => ({[e.range.split("!")[0].toLowerCase()]: {values: e.values}})), g);
+											$.ajax({
+													url: getbatchsheets([currentRespones(yearstart),'Reasons']),
+													type: "GET",
+													success: function (e, a, s) {
+															g.pass = Object.assign(...e.valueRanges.map(e => ({[e.range.split("!")[0].toLowerCase()]: {values: e.values}})));
+															setauto(g.all_students.values.slice(1));
+															//console.log(g);
+
+															Object.keys(g.pass).forEach((v,k)=>{
+																	let t = g.pass[v].values;
+																	if(k==0){g.headers = t[0];g.pass.cresponse = g.pass[v].values}
+															});
+															
+															setautostaff(g.all_staff).then((all_staff) =>{
+                               		setlist(g.pass.reasons.values, "reasons_list");
+                                  $(window).load(function(){
+                                      $('#overlay').fadeOut(500);
+																	});
+                               });
+
+
+													},error: function (e, a, s) {}
+											});
+									},error: function (e, a, s) {}
+							});
+
+								$("#student_name").on("keyup" ,function(event){
+											let ea = g.all_students.number.filter(e=> e.number == $("#student_name").val());
+											let e = ea[0]||{};//= g.all_students.number.filter(e=> e.number == $("#student_name").val());
+											if(event.keyCode == 13) {
+											event.preventDefault();
+											
+											//alert('You pressed enter!');
+												if($("#student_name").val().length==7) {
+													if($("#student_name").val()==e.number){
+														//$("#student_name").val(`${e.first} ${e.last}`)
+														$("#firstname").val(e.first), 
+														$("#lastname").val(e.last),
+														$("#grade").val(e.grade), 
+														$("#studentnumber").val(e.number);
+                        		//console.log($('#reason').val());
+														("undefined"== typeof $('#reason').val())?selectli($("#studentname")):submitform(this);
+													}else{
+														console.log(e,'not equal to');
+														$(this).select();
+														$(this).effect("shake", {times:4}, 500);
+													}
+													console.log(e,'7 characters');
+														//console.log($("#student_name").val(),e);
+														//$("#student_name").removeClass("is-invalid");
+														
+												}else {
+													$("#student_name").addClass("is-invalid");
+												 //is-invalid
+												 //console.log(e,'not 7 characters');
+												}
+											}else{
+											//console.log(g.all_students.number);
+											console.log(e,ea.length>0);
+												if ($("#student_name").val()==e.number){
+													$("#student_name").removeClass("is-invalid");
+													$("#student_name").addClass("is-valid");
+												}else{
+													$("#student_name").removeClass("is-valid");
+													$("#student_name").addClass("is-invalid");
+												}
+											}
+									 })
+
+						})
+						
+            						
+            function submitform(e) {
+                    $('#overlay').fadeIn(500);
+                    let $this = e;
+                    let d = new Date(Date.now());
+                    d = d.toString();
+                    var fn = $("#firstname").val();
+                    var ln = $("#lastname").val();
+                    var res = $("#reason").val();
+                    let teacher = $("#teacher").val();
+                    let grade = $("#grade").val();
+                    let studentnumber = $("#studentnumber").val();
+                    var period = getperiod();
+                    $($this).addClass("done");
+                    
+                    //$($this).prop('disabled', true);
+                    
+                    $("#studentname").html(fn + " " + ln);
+                    $("#currentperiod").html(period.text);
+                    $("#timestamp").html(now());
+                    $("#studentreason").html("Reason: " + res);
+                    
+                    $("#pass").show("slow");
+                    $("form").hide("slow");
+                    
+                    //print_refresh(this);return;
+                    $.ajax({
+                        url: macro_url,
+                        type: "GET", //dataType: "jsonp",
+                        data: {
+                            "action": "post_response",
+                            "first": fn,
+                            "last": ln,
+                            "reason": res,
+                            "teacher": teacher,
+                            "period": period.period,
+                            "grade": grade,
+                            "studentnumber": studentnumber
+                        },
+                        success: function(data, textStatus, jqXHR) {
+                            console.log(data);
+                            console.log("Sent Response");
+                            printpass(data.data);
+                            print_refresh(this);
+                            
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(errorThrown);
+                            console.log(textStatus);
+                        }
+                    });
+                }
+                
+            function print_refresh(e){
+								
+                setTimeout(function () {
+                		$("#firstname").val("");
+                    $("#lastname").val("");
+                    //$("#reason").val("");
+                    $("#grade").val("");
+                    $("#studentnumber").val("");
+                    $("#student_name").val("")
+                    $("#student_name").removeClass("is-invalid");
+										$("#student_name").removeClass("is-valid");
+										$("#student_name").removeClass("done");
+                    $("#alertbox").hide();
+                    $("#pass").hide("slow");
+                    $('#overlay').fadeOut(500);
+                    $("form").show("slow");
+                    $("#student_name").focus().select();
+                }, 1e3);
+                
+            }
+            
+            function selectli(t) {
+                var data = $(t).data();
+                $(t).parent().find('input').val(data.value)
+                $(t).parent().find('a').removeClass("active");
+                $(t).addClass("active");
+                nextStep(t);
+            }
+            
+            function setlist(a, i) {
+                a.map((e, k) => {
+                		let b;
+                    let c = {["data-value"]: e[0],["data-index"]: k,class: "list-group-item list-group-item-action"}
+                    let f = a.findIndex((h) => (h[0] == e[0]));
+                    if (e.length == 2) {
+                        let d = JSON.parse(e[1]);
+                        c = ('sublist' in d)?{...c,...{["data-sublist"]: d.sublist}}:c;
+                        b = $('<a>', c).html(e[0]);
+                        if ('filter' in d) {
+                            g.sublist = g[d.sublist].pronames.filter(j => j[Object.keys(d.filter)[0]] == d.filter[Object.keys(d.filter)[0]])
+                        } 
+												if ('periods' in d) {
+                        		let per = getperiod().periodnum;
+                            let p = d.periods.find((e) => e == per)
+                            if(!p)return;
+                            if('auto' in d && d.auto) {
+                              
+                              $('input#reason').val(e[0]);
+                              return;
+                            }
+                        }
+                        
+                        if('sublist' in d) {
+                        		g.sublist = g[d.sublist].pronames;
+                            $(b).on("click", function() {
+                                var data = $(this).data();
+                                $(this).parent().find('input').val(data.value)
+                                $(this).parent().find('a').removeClass("active");
+                                $(this).addClass("active");
+                                nextStep(this);
+                            }).appendTo($('#' + i));
+                            return;
+                        }
+												
+                        $(b).on("click", function() {
+                            var data = $(this).data();
+                            $(this).parent().find('input').val(data.value)
+                            $(this).parent().find('a').removeClass("active");
+                            $(this).addClass("active");
+                            //$(this).parent().disabled(true);
+                           	submitform(this);
+                           
+                        }).appendTo($('#' + i));
+
+                    }else{
+                    	b = $('<a>', c).html(e[0]);
+                    	$(b).on("click", function() {
+                          var data = $(this).data();
+                          $(this).parent().find('hidden').val(data.value)
+                          $(this).parent().find('a').removeClass("active");
+                          $(this).addClass("active");
+                          submitform(this);
+                          
+                      }).appendTo($('#' + i));
+                    }
+                    
+                })
+            }
+
+            function setauto(w) {
+								g.all_students.number = w.map(function (t, e) {
+                    return {first: t[3],value: `${t[2]}`,last: t[5],number: t[2], grade: t[0]}}), 
+                g.all_students.fullnames = w.map(function (t, e) {
+                    return {first: t[3],value: `${t[3]} ${t[5]}`,last: t[5],number: t[2], grade: t[0]}}), 
+                    console.log("Got Students"), 
+                $("#student_name").autocomplete({
+                    minLength: 7,
+										//autoFocus: true,
+										source: g.all_students.number,
+                    select: function (t, e) {}
+                }).data("ui-autocomplete")._renderItem = function (t, e) {
+                    let n = $("#myTemplate").template(e);
+										
+                    return $(n).hover(function (t) {
+                        $("#student_name").val(`${e.number}`)
+                    })
+										.on("click", function (t) {
+                        $("#student_name").val(`${e.first} ${e.last}`), 
+												$("#firstname").val(e.first), 
+												$("#lastname").val(e.last),
+												$("#grade").val(e.grade), 
+												$("#studentnumber").val(e.number);
+                        console.log($('#reason').val());
+											 ("undefined"== typeof $('#reason').val())?selectli($("#studentname")):submitform(this);
+                    }), t.append(n), n
+                }
+            }
+
+            function nextStep(t) {
+            		currentStep++;let index = currentStep;
+                steps.removeClass("active prev");
+                steps.eq(index).addClass("active next");
+                //steps.eq(index).fadeIn('fast');
+            }
+            
+            function prevStep(t) {
+            		currentStep--;let index = currentStep;
+								steps.removeClass("active next");
+                steps.eq(index).addClass("active prev");
+                //steps.eq(index).slideDown('fast');
+            }
+
+         async function setautostaff(a) {
+           		return new Promise((resolve, _) => {
+                g.all_staff.fullnames = (a.values.map(function(v, i) {
+                    return {
+                        first: v[2],
+                        value: v[2] + ' ' + v[3],
+                        last: v[3],
+                        id: v[0],
+                        title: v[6],
+                        isteacher: v[7],
+                        gender: v[4]
+                    };
+                })).slice(1);
+                g.all_staff.pronames = (a.values.map(function(v, i) {
+                    return {
+                        first: v[2],
+                        value: ((v[4] == 'F') ? 'MS. ' : 'MR. ') + v[2].slice(0, 1) + '. ' + v[3],
+                        last: v[3],
+                        id: v[0],
+                        isteacher: v[7],
+                        title: v[6]
+                    };
+                })).slice(1);
+								
+                console.log('Got Staff');
+                $('#teachername').autocomplete({
+                    minLength: 1,
+                    source: g.all_staff.pronames,
+                    focus: function(event, ui) {
+                        $(this).val(ui.item.value);
+                        return false;
+                    },
+                    select: function(event, ui) {
+                        $(this).val(ui.item.value);
+                        let res = $('input#reason').val() +': '+ui.item.value;
+                        $('#reason').val(res);
+                        submitform(this);
+                        return false;
+                    }
+                });
+                resolve(g.all_staff);
+                });
+
+            }
+
+            //ui-menu-item
+        });
+
+    </script>
+		<script>
+				function responsesNames(e) {
+						let t = new Date,
+								n = new Date(e),
+								o = [];t.setDate(1);
+						while (n <= t) {
+								let s = `${n.toLocaleString("default", { month: "short" })}-${n.getFullYear()} Responses`;
+								o.push(s);
+								n.setMonth(n.getMonth() + 1);
+						}
+						return o
+				}
+				function currentRespones(x) {
+						let r = responsesNames(x);
+						return r[r.length -1];
+				}
+				function numberComma(x) {
+						return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+				}
+		</script>
+		<script id="dymo-print">
+				var debug = !1;
+		      var label;
+      var global = {
+        lastFetchedData: null,
+        workdate:null,
+        lastcheck:null,
+        monthyear: null,
+        label:null,
+        xml: null,
+        preview:null,
+        macrourl: null,
+        printlist: {}
+      };
+      global.macrourl = macro_url;
+      
+     	async function getAddressLabelXml(obj) {
+        var labelXml = await new XMLSerializer().serializeToString(global.xml);
+        //console.log(19, obj);
+        labelXml = labelXml.replace("{{pass}}", "Pass To Class");
+        labelXml = labelXml.replace("{{url}}", obj.studentnumber);
+        labelXml = labelXml.replace("{{studentname}}", obj.studentname);
+        labelXml = labelXml.replace("{{period}}", obj.period);
+        labelXml = labelXml.replace("{{datetime}}", obj.datetime);
+        //updatePreview();
+        return new Promise((resolve, _) => {
+          resolve(labelXml)
+        });
+      }
+
+      async function onload() {
+        loadPrinters().then(async (printer) => {
+          if ("undefined" != typeof printer) {
+            debug && console.log(printer.name + " Printer Loaded")
+          }
+          updatePreview(label);
+        });
+      }
+
+      async function loadLabelFromWeb(e={test:"print"}) {
+        return new Promise(async (resolve, _) => {
+				//console.log(e);
+          resolve(dymo.label.framework.openLabelXml(await getAddressLabelXml({
+            studentname: "Student Name",
+            datetime: now(),
+            period: getperiod().text
+          })))
+        });
+      }
+
+      function updatePreview(lbl) {
+        if (!lbl) return lbl;
+        try {
+          var pngData = lbl.render();
+          global.preview = "data:image/png;base64," + pngData;
+        } catch (e) {
+          debug && console.log(52, e.toString().split('at')[0].split(': ')[1]);
+        } finally {
+          return lbl;
+        }
+      }
+
+      async function loadPrinters() {
+        var printers = dymo.label.framework.getPrinters();
+        let result;
+        if (printers.length == 0) {
+          result = ("No DYMO printers are installed. Install DYMO printers.");
+          //return;
+        }
+        for (var i = 0; i < printers.length; i++) {
+          var printer = printers[i];
+          if (printer.printerType == "LabelWriterPrinter") {
+            var printerName = printer.name;
+            global.printer = printerName;
+            
+            if (printer.isConnected) {
+            	debug && console.log(printer);
+              result = printer;
+              $("#alertbox").html("Printer Online! " + printerName);
+              $("#alertbox").addClass('alert-info');
+              $("#alertbox").removeClass('alert-danger');
+              $("#alertbox").show();
+              break;
+            } else {
+              $("#alertbox").html("No Printer! " + printerName);
+              $("#alertbox").removeClass('alert-info');
+              $("#alertbox").addClass('alert-danger');
+              $("#alertbox").show();
+            }
+
+
+
+          }
+
+
+        }
+				
+        return new Promise((resolve, _) => {resolve(result)});
+
+      }
+
+      function initPrinter() {
+        if (dymo.label.framework.init) {
+          dymo.label.framework.init(onload);
+        } else {
+          onload();
+        }
+      }
+
+
+      if (window.addEventListener) window.addEventListener("load", initPrinter, false);
+      else if (window.attachEvent) window.attachEvent("onload", initPrinter);
+      else window.onload = initPrinter;
+
+      $(function() {
+        $(document).ready(function() {
+          $.ajax({
+            type: "get",
+            url: "https://cdn.jsdelivr.net/gh/38406/carver/dymolayout-30336.xml",
+            success: function(data) {
+              global.xml = data;console.l
+              debug && console.log(104, "Loaded XML");
+              loadLabelFromWeb().then(async (lbl) => {
+                global.label = lbl;
+                label = lbl;
+              });
+
+            },
+            error: function(xhr, status) {
+              console.log(status);
+            }
+          });
+          
+          
+          debug && console.log(loadStorage(storagename));
+          debug && console.log(window, localStorage, sessionStorage);
+          debug && console.log(getperiod())
+          $('.container h6').html(`${getperiod().text} <span class="badge badge-warning">0</span>`);
+					
+					
+
+        });
+      });
+			
+			async function printpass(e) {
+        let url = global.macrourl + encodeURIComponent('?action=validate_pass&pass_id=') + e.pass_id;
+        label = await dymo.label.framework.openLabelXml(await getAddressLabelXml({
+          studentname: e.first + ' ' + e.last,
+          datetime: now(),
+          validateurl: url,
+          studentnumber: e.studentnumber,
+          period: getperiod().text
+        }));
+        //printing slow? Prevent connections to 128.30.52.100 DYMO.DLS.Printing.Host.exe
+        label.print(global.printer);
+        console.log(189, JSON.stringify(e));
+				
+				
+      }
+		
+		</script>
+		
+    <script id="myTemplate" type="text/x-jquery-tmpl">
+
+            <a class="list-group-item list-group-item-action " data-value="${first} ${last}">
+              <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">${label}</h5><small class="text-muted"></small>
+              </div>
+              <small class="text-muted">Grade: ${grade}, ID: ${number}</small>
+          </a>
+
+    </script>
+</body>
+
+</html>
