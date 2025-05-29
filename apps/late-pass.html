@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carver Steam - Late Pass</title>
+    <link rel="top_url" href="https://sites.google.com/apsk12.org/carver-steam/late-pass" crossorigin="anonymous">
+    <link rel="manifest" href="" crossorigin="anonymous">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <style>#overlay {
+    background: no-repeat scroll center center #fff;
+    position: absolute;
+    z-index: 999999;
+    height: 100%;
+    width: 100%;
+    opacity: .5; /* in FireFox */ 
+    filter: alpha(opacity=50); /* in IE */
+}.bottom-0,.row.nav{bottom:0!important}.container,.step{position:relative;width:100%}.row.nav{position:absolute!important;width:100%}.container{height:100%;padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto}.step{top:0;min-height:400px;display:none}.step.active{display:block}.step.active.next{left:0;-webkit-animation:.1s linear forwards right-to-left2;animation:.1s linear forwards right-to-left2}.step.active.prev{left:0;-webkit-animation:.1s linear forwards left-to-right;animation:.1s linear forwards left-to-right}@-webkit-keyframes left-to-right{from{left:-100%}to{left:0}}@-webkit-keyframes left-to-right2{from{left:-100%}to{left:0}}@-webkit-keyframes right-to-left{from{left:0}to{left:100%}}@-webkit-keyframes right-to-left2{from{left:100%}to{left:0}}@keyframes left-to-right{from{left:-100%}to{left:0}}@keyframes right-to-left{from{left:0}to{left:100%}}@keyframes right-to-left2{from{left:100%}to{left:0}}</style>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script src="https://script.google.com/macros/s/AKfycbyhryz4MSpMnn2VY4aSJ7mm4RT8IhAIOwNegvUR03pZeUH69zzj-xDbjQuJEzwjeLby/exec?type=get&action=js"></script>
+
+</head>
+
+<body>
+    <div id="overlay"></div>
+    
+    <div class="container mt-0">
+        <div class="row">
+            <div class="col">
+                <div class="mb-3 position-relative ">
+                    <div class="position-relative ">
+                        <div id="pass" class="pt-0 jumbotron-fluid justify-content-center" style="display: none;">
+														<div class="card text-center">
+															<div class="card-header">Pass to Class</div>
+															<div class="card-body">
+															<div class="row">
+																	<div class="col-xs-12 col-md-7 col-lg-7">
+																		<div class="col-12 text-left">
+																			<h3 id="studentname" class="card-title">Student Name</h3>
+																			<h4 id="currentperiod" class="display-6">Period</h4>
+																			<h5 id="sched" class="display-6">Period</h5>
+																			<h5 id="timestamp" class="display-6">Time Stamp</h5>
+																			<p id="studentreason" class="lead mb-0">Reason: Woke up late</p>
+																			<p class="card-text"></p>
+																		</div>
+																	</div>
+																	<div class="col-xs-12 col-md-5 col-lg-5">
+																			<div id="qrcode"></div>
+																	</div>
+															</div>
+																
+															</div>
+															<div class="card-footer text-muted"></div>
+														</div>
+                        </div>
+                        <form id="multiStepForm">
+                            
+                            <div class="form-row justify-content-center">
+                                <div class="alert alert-info" role="alert">Fill out student info and your pass will generate here!</div>
+                            </div>
+                            <!-- Step Student Name -->
+                            <div class="step active">
+                                <div class="form-row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="student_name">Student Name</label>
+                                        <input type="text" class="form-control form-control-lg" data-value="studentname" id="student_name" aria-describedby="studentHelpBlock" required placeholder="Future Gradute!">
+                                        <small id="studentHelpBlock" class="form-text text-muted">
+                                            Start by typing first or last name above! 😒
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+                            <!-- Step Reason -->
+                            <div class="step">
+																<div class="form-group">
+																		<h3>Reason</h3>
+																		<div id="reasons_list" class="list-group">
+																				<input type="hidden" name="reason" class="form-control" id="reason">
+
+																		</div>
+																</div>
+                            </div>
+                            
+                             <!-- Step Student Name -->
+                            <div class="step">
+                                <div class="form-row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="student_name">Teacher Name</label>
+                                        <input type="text" class="form-control form-control-lg" id="teachername" name="teachername" required placeholder="">
+                                        <small id="teachernameHelpBlock" class="form-text text-muted">
+                                            Start typing Teacher last name! 📚
+                                        </small>
+                                    </div>
+                                </div>
+                                <input type='hidden' class="form-control" id="action" value="null" />
+                            </div>
+                            
+                            <!-- Step Sublist -->
+                            <div class="step">
+                                <div class="form-group">
+                                    <label for="teachername" class="form-label">Name</label>
+                                    <input type="text" class="form-control form-control-lg" id="teachername" placeholder="Washington Carver">
+                                    <input type='hidden' id="teacher_firstname" value="null" />
+                                    <input type='hidden' id="teacher_lastname" value="null" />
+                                    <input type='hidden' id="teacher_id" value="null" />
+                                </div>
+                            </div>
+                            
+                            <div class="form-row justify-content-center">
+                                <p class="text-uppercase fw-semibold">Choose Carver Choose Greatness</p>
+                            </div>
+                            <input type='hidden' class="form-control" name="period" id="period" value="null" />
+														<input type='hidden' class="form-control" name="day" id="day" value="null" />
+                            <input type="hidden" class="form-control" data-value="firstn" id="firstname" name="firstname">
+                            <input type="hidden" class="form-control" data-value="lastn" id="lastname" name="lastname">
+                            <input type="hidden" class="form-control" id="teacher" name="teacher">
+                            <input type="hidden" class="form-control" data-value="sn" id="studentnumber" name="studentnumber">
+                            <input type="hidden" class="form-control" data-value="sgrade" id="grade" name="grade">
+														<input type='hidden' class="form-control" name="type" value="pass" />
+														<input type='hidden' class="form-control" name="action" value="post_response" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        (function($) {
+            $.fn.extend({
+                template: function(d) {
+                    return this.map(function() {
+                        var t = $(this).html();
+                        var r = t.replace(/\$\{(\w+)\}/g, function(m, k) {
+                            return d[k] !== undefined ? d[k] : m;
+                        });
+                        return $(document.createElement('div')).html(r).children().get();
+                    });
+                }
+            });
+        })(jQuery);
+
+    </script>
+    
+    <script>
+        $(function() {
+            //var student= {first:null,last:null,number:null,grade:null},teacher;
+            var g = {};
+            var steps = $(".step");
+            var currentStep = 0;
+						$("#period").val(getperiod().period);
+						$("#day").val(getperiod().day);
+                        
+            $(document).ready(function() {
+            
+            		$('link[rel="manifest"]').attr({href:macro_url+'?action=manifest'});
+
+                $.ajax({
+                    url: getbatchsheets(['Reasons', `${monthYear()} Responses`]),											
+										async: false,
+                    type: "GET",
+                    success: function(d, textStatus, jqXHR) {
+                        g = Object.assign(...d.valueRanges.map(i => ({
+                            [i.range.split('!')[0].toLowerCase()]: {
+                                data: i.values
+                            }
+                        })), g);
+                       
+
+                        $.ajax({
+                            url: getbatchsheets(['All_Staff', 'All_Students'], '1HhUzi3vSi3Duk7aIdJKkE97HskNAbEaSAhurj387Iss'),
+                            async: false,
+                            type: "GET",
+                            success: function(d, textStatus, jqXHR) {
+                                g = Object.assign(...d.valueRanges.map(i => ({
+                                    [i.range.split('!')[0].toLowerCase()]: {data: i.values}
+                                })), g);
+
+                               setauto(g.all_students.data.slice(1)); 
+                               setautostaff(g.all_staff).then((all_staff) =>{
+                               		setlist(g.reasons.data, "reasons_list");//console.log(g);
+                                  $(window).load(function(){ $('#overlay').fadeOut(300);});
+                               });
+                                
+                                
+
+
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {}
+                        });
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {}
+                });
+								
+								$('input').on('change propertychange blur keyup', function(e) {
+										let value = ('data' in this)?('value' in this.data)?this.data.value:'':'';
+										console.log(this.value,this.id,value) 
+										$("#studentname").html($('firstname').val() + " " + $('lastname').val());
+								});
+                
+            });
+						
+            function submitform(e) {
+                    $('#overlay').fadeIn(500);
+										const formData = ($('#multiStepForm').serialize());
+										let j=JSON.parse(JSON.stringify($("#multiStepForm").serializeArray()))
+										.reduce((e,r)=>Object.assign(e,{[r.name]:r.value}),{});
+										
+                    let $this = e;
+                    let d = new Date(Date.now());
+                    d = d.toString();
+                   	var period = getperiod();
+                    $($this).addClass("done");
+                    $($this).prop('disabled', true);
+                    $("#studentname").html(j.firstname + " " + j.lastname);                    
+                    $("#currentperiod").html(period.text);
+                    $("#timestamp").html(now());
+                    $("#studentreason").html("Reason: " + j.reason);
+                    getqrc("qrcode", macro_url + "?type=pass&action=validate&firstname=" + j.firstname + "&lastname=" + j.lastname + "&reason=" + j.reason + "&time=" + (now()));
+                    
+										let fg = $('.step.active').find('.form-group');
+										fg.html('');fg.html('<h2 class="display-3">Loading...</h2>');
+                    
+                    console.log(formData);
+                    
+                    //return;
+                    $.ajax({
+                        url: macro_url,
+                        type: "GET", //dataType: "jsonp",
+                        data: formData,
+                        success: function(d, textStatus, jqXHR) {
+														let data = d.data;
+														$('#overlay').fadeOut(300);
+														if ('class' in data || data.hasOwnProperty('class') || data.class){
+															let c = data.class;
+															$('#sched').html(`${c.coursename} | ${c.teacherfullname} | Room: ${c.roomname}`)
+														}else{
+															$('#sched').hide()
+														}
+														if ('pass' in data || data.hasOwnProperty('pass') || data.pass){
+																let p = data.pass;
+																$("#studentname").html(p.firstname + " " + p.lastname);                    
+                    						$("#currentperiod").html(getperiod(p.timestamp).text);
+                    						$("#timestamp").html(p.timestamp);
+																$("#studentreason").html("Reason: " + p.reason);
+														}
+														$("form").hide("fast");
+														$("#pass").show("fast");
+                            console.log(d);
+                            console.log("Sent Response");
+                            
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(errorThrown);
+                            console.log(textStatus);
+                        }
+                    });
+                };
+            
+            function selectli(t) {
+                var data = $(t).data();
+                $(t).parent().find('input').val(data.value)
+                $(t).parent().find('a').removeClass("active");
+                $(t).addClass("active");
+                nextStep(t);
+            }
+            
+            function setlist(a, i) {
+						
+                a.map((e, k) => {
+                		let b;
+                    let c = {["data-value"]: e[0],["data-index"]: k,class: "list-group-item list-group-item-action"}
+                    let f = a.findIndex((h) => (h[0] == e[0]));
+                    if (e.length == 2) {
+                        let d = JSON.parse(e[1]);
+                        c = ('sublist' in d)?{...c,...{["data-sublist"]: d.sublist}}:c;
+                        b = $('<a>', c).html(e[0]);//console.log(e[0]);
+                        if ('filter' in d) {
+                            g.sublist = g[d.sublist].pronames.filter(j => j[Object.keys(d.filter)[0]] == d.filter[Object.keys(d.filter)[0]])
+                        } 
+												if ('periods' in d) {
+                        		let per = getperiod().periodnum;//'08/14/2024 2:20 PM'
+                            let p = d.periods.find((e) => e == per);
+														//let p = d.periods.indexOf(per); //!== -1
+														//console.log(p,per,d);
+                        		if(!p)return;
+                        }
+                        if('sublist' in d) {
+                        		g.sublist = g[d.sublist].pronames;
+                            $(b).on("click", function() {
+                                var data = $(this).data();
+                                $(this).parent().find('input').val(data.value)
+                                $(this).parent().find('a').removeClass("active");
+                                $(this).addClass("active");
+                                nextStep(this);
+                            }).appendTo($('#' + i));
+                            return;
+                        }
+												
+                        $(b).on("click", function() {
+                            var data = $(this).data();
+                            $(this).parent().find('input').val(data.value)
+                            $(this).parent().find('a').removeClass("active");
+                            $(this).addClass("active");
+                            //$(this).parent().disabled(true);
+                           	submitform(this);
+                           
+                        }).appendTo($('#' + i));
+
+                    }else{
+                    	b = $('<a>', c).html(e[0]);
+                    	$(b).on("click", function() {
+                          var data = $(this).data();
+                          $(this).parent().find('hidden').val(data.value)
+                          $(this).parent().find('a').removeClass("active");
+                          $(this).addClass("active");
+                          submitform(this);
+                          
+                      }).appendTo($('#' + i));
+                    }
+                    
+                })
+            }
+
+            function setauto(w) {
+                g.all_students.fullnames = w.map(function (t, e) {
+                    return {first: t[3],value: `${t[3]} ${t[5]}`,last: t[5],number: t[2], grade: t[0]}}), 
+                    console.log("Got Students"), 
+                    $("#student_name").autocomplete({
+                    minLength: 3,
+                    source: g.all_students.fullnames,
+                    select: function (t, e) {}
+                }).data("ui-autocomplete")._renderItem = function (t, e) {
+                    let n = $("#myTemplate").template(e);
+                    return $(n).hover(function (t) {
+                        $("#student_name").val(`${e.first} ${e.last}`)
+                    }).on("click", function (t) {
+                        $("#student_name").val(`${e.first} ${e.last}`), $("#firstname").val(e.first), $("#lastname").val(e.last),$("#grade").val(e.grade), $("#studentnumber").val(e.number), selectli($("#studentname"))
+                    }), t.append(n), n
+                }
+            }
+
+            function nextStep(t) {
+            		currentStep++;let index = currentStep;
+                steps.removeClass("active prev");
+                steps.eq(index).addClass("active next");
+                //steps.eq(index).fadeIn('fast');
+            }
+            
+            function prevStep(t) {
+            		currentStep--;let index = currentStep;
+								steps.removeClass("active next");
+                steps.eq(index).addClass("active prev");
+                //steps.eq(index).slideDown('fast');
+            }
+
+         async function setautostaff(a) {
+           		return new Promise((resolve, _) => {
+                g.all_staff.fullnames = (a.data.map(function(v, i) {
+                    return {
+                        first: v[3],
+                        value: v[5] + ', ' + v[3],
+                        last: v[5],
+                        id: v[1],
+                        title: v[8],
+                        isteacher: v[9],
+                        gender: v[6]
+                    };
+                })).slice(1);
+                g.all_staff.pronames = (a.data.map(function(v, i) {
+                    return {
+                        first: v[3],
+                        value: ((v[6] == 'F') ? 'MS. ' : 'MR. ') + v[3].slice(0, 1) + '. ' + v[5],
+                        last: v[5],
+                        id: v[1],
+                        isteacher: v[9],
+                        title: v[8]
+                    };
+                })).slice(1);
+								
+                console.log('Got Staff');
+                $('#teachername').autocomplete({
+                    minLength: 1,
+                    source: g.all_staff.fullnames,
+                    focus: function(event, ui) {
+                        $(this).val(ui.item.value);
+                        return false;
+                    },
+                    select: function(event, ui) {
+                        $(this).val(ui.item.value);
+                        let res = $('input#reason').val() +': '+ui.item.value;
+                        $('#reason').val(res);
+                        submitform(this);
+                        return false;
+                    }
+                });
+                resolve(g.all_staff);
+                });
+
+            }
+
+            
+        });
+
+    </script>
+    <script id="myTemplate" type="template">
+
+            <a class="list-group-item list-group-item-action" data-value="${first} ${last}">
+              <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">${label}</h6><small class="text-muted"></small>
+              </div>
+              <small class="text-muted">Grade: ${grade}, ID: ${number}</small>
+          </a>
+
+    </script>
+</body>
+
+</html>
