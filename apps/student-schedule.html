@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carver Steam - Late Pass</title>
+    <link rel="top_url" href="https://sites.google.com/apsk12.org/carver-steam/late-pass" crossorigin="anonymous">
+    <link rel="manifest" href="" crossorigin="anonymous">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <style>#overlay {
+    background: no-repeat scroll center center #fff;
+    position: absolute;
+    z-index: 999999;
+    height: 100%;
+    width: 100%;
+    opacity: .5; /* in FireFox */ 
+    filter: alpha(opacity=50); /* in IE */
+}.bottom-0,.row.nav{bottom:0!important}.container,.step{position:relative;width:100%}.row.nav{position:absolute!important;width:100%}.container{height:100%;padding-right:15px;padding-left:15px;margin-right:auto;margin-left:auto}.step{top:0;min-height:400px;display:none}.step.active{display:block}.step.active.next{left:0;-webkit-animation:.1s linear forwards right-to-left2;animation:.1s linear forwards right-to-left2}.step.active.prev{left:0;-webkit-animation:.1s linear forwards left-to-right;animation:.1s linear forwards left-to-right}@-webkit-keyframes left-to-right{from{left:-100%}to{left:0}}@-webkit-keyframes left-to-right2{from{left:-100%}to{left:0}}@-webkit-keyframes right-to-left{from{left:0}to{left:100%}}@-webkit-keyframes right-to-left2{from{left:100%}to{left:0}}@keyframes left-to-right{from{left:-100%}to{left:0}}@keyframes right-to-left{from{left:0}to{left:100%}}@keyframes right-to-left2{from{left:100%}to{left:0}}</style>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script src="https://script.google.com/macros/s/AKfycbzcWoFWV5WnyM7ltx5BSRMt9eT0qD5Cus_F2eJdHSatlxA-U9K8tTNK-G7XhlZKoaYQ/exec?type=get&action=js"></script>
+
+</head>
+
+<body>
+    <div id="overlay2"></div>
+    
+    <div class="container mt-0">
+        <div class="row">
+            <div class="col">
+                <div class="mb-3 position-relative ">
+                    <div class="position-relative ">
+                        <div id="pass" class="pt-0 jumbotron-fluid justify-content-center" style="display: none;">
+														<div class="card text-center">
+															<div class="card-header">Student Schedule</div>
+															<div class="card-body">
+															<div class="row">
+																	<div class="col-xs-12 col-md-12 col-lg-12">
+																		<div id="sched" class="col-12 text-left">
+																			<h2 id="no" class="display-3" style="display: none;">No Class Available</h2>
+																			<h3 id="studentname" class="card-title"></h3>
+																			<h4 id="coursename" class="display-6"></h4>
+																			<h5 id="teacherfullname" class="display-6"></h5>
+																			<h5 id="roomname" class="display-6"></h5>
+																			<p id="departmentname" class="lead mb-0"></p>
+																			<p class="card-text"></p>
+																			
+																		</div>
+																		<a id="refresh" class="btn btn-primary btn-block mt-3" href="#" role="button">Refresh</a>
+																	</div>
+															</div>
+																
+															</div>
+															<div class="card-footer text-muted"></div>
+														</div>
+                        </div>
+                        <form id="multiStepForm">
+                            
+                            <div class="form-row justify-content-center">
+                                <div class="alert alert-info" role="alert">Fill out student info and Current class will generate here!</div>
+                            </div>
+                            <!-- Step Student Name -->
+                            <div class="step active">
+                                <div class="form-row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="student_name">Student Name</label>
+                                        <input type="text" class="form-control form-control-lg" data-value="studentname" id="student_name" aria-describedby="studentHelpBlock" required placeholder="Future Gradute!">
+                                        <small id="studentHelpBlock" class="form-text text-muted">
+                                            Start by typing first or last name above! 😒
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="period_select">Class Period</label>
+                                        <select id="period_select" class="form-control form-control-lg">
+																					<option value="1">1st</option>
+																					<option value="2">2nd</option>
+																					<option value="3">3rd</option>
+																					<option value="4">4th</option>
+																					<option value="A">Acceleration</option>
+																					<option value="5">5th</option>
+																					<option value="6">6th</option>
+																					<option value="7">7th</option>
+																					<option value="8">8th</option>
+																				</select>
+																				<input type='hidden' class="form-control" name="period" id="period" value="null" />
+                                        <small id="periodHelpBlock" class="form-text text-muted">
+                                            Select class period to view!
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                                                       
+                            <div class="form-row justify-content-center">
+                                <p class="text-uppercase fw-semibold">Choose Carver Choose Greatness</p>
+                            </div>
+                            
+														<input type='hidden' class="form-control" name="day" id="day" value="null" />
+                            <input type="hidden" class="form-control" data-value="firstn" id="firstname" name="firstname">
+                            <input type="hidden" class="form-control" data-value="lastn" id="lastname" name="lastname">
+                           	<input type="hidden" class="form-control" data-value="sn" id="studentnumber" name="studentnumber">
+                            <input type="hidden" class="form-control" data-value="sgrade" id="grade" name="grade">
+														<input type='hidden' class="form-control" name="type" value="school" />
+														<input type='hidden' class="form-control" name="action" value="class" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        (function($) {
+            $.fn.extend({
+                template: function(d) {
+                    return this.map(function() {
+                        var t = $(this).html();
+                        var r = t.replace(/\$\{(\w+)\}/g, function(m, k) {
+                            return d[k] !== undefined ? d[k] : m;
+                        });
+                        return $(document.createElement('div')).html(r).children().get();
+                    });
+                }
+            });
+        })(jQuery);
+
+    </script>
+    
+    <script>
+        $(function() {
+            //var student= {first:null,last:null,number:null,grade:null},teacher;
+            var g = {};
+            var steps = $(".step");
+            var currentStep = 0;
+						$("#period").val(getperiod().periodnum);
+						$('#period_select').val(getperiod().periodnum);
+						$("#day").val(getperiod().day);
+                        
+            $(document).ready(function() {
+            
+            		$('link[rel="manifest"]').attr({href:macro_url+'?action=manifest'});
+
+                		 $.ajax({
+                            url: getbatchsheets(['Student_Schedule','Schedule','All_Students'], '1HhUzi3vSi3Duk7aIdJKkE97HskNAbEaSAhurj387Iss'),
+                            async: false,
+                            type: "GET",
+                            success: function(d, textStatus, jqXHR) {
+                                g = Object.assign(...d.valueRanges.map(i => ({
+                                    [i.range.split('!')[0].toLowerCase()]: {data: i.values}
+                                })), g);
+																
+                               setauto(g.all_students.data.slice(1)); 
+                                                       
+                           },
+                            error: function(jqXHR, textStatus, errorThrown) {}
+                        });
+                  
+								
+								$('input').on('change propertychange blur keyup', function(e) {
+										let value = ('data' in this)?('value' in this.data)?this.data.value:'':'';
+										console.log(this.value,this.id,value) 
+										$("#studentname").html($('#firstname').val() + " " + $('#lastname').val());
+								});
+								
+								$('#period_select').on('change',function(e){
+										$('#period').val(this.value);
+								});
+								$('#refresh').on('click',function(e){
+										e.preventDefault();
+										refresh();
+								});
+                
+            });
+						
+						function getRowJson(t, i) {
+								if (t && i) {
+										var e = t,
+												n = e[0],
+												a = [];
+										for (var r = {}, g = 0; g < n.length; g++) r[n[g].toLowerCase()] = (e[i][g].replace(/['\-`]/g, ''));
+										return r;
+								}
+						}
+						
+						function getStudentClass(e) {
+								let t = {};
+								if ("studentnumber" in e) {
+										let s = ('period' in e)?(e.period=='Acceleration'||e.period=='A')?'INTV':e.period:(getperiod().periodnum=='A')?'INTV':getperiod().periodnum,
+												n = g.schedule.data,
+												r = g.student_schedule.data;
+										for (var u = new Map, a = 0; a < r.length; a++) {
+												var i = r[a];
+												i[12] == e.studentnumber && i[13] == s && u.set(i[1], getRowJson(r, a))
+										}
+										if (0 === u.size) return [];
+										for (var l = 0; l < n.length; l++) {
+												var d = n[l];
+												if (d[2] == s) {
+														var f = u.get(d[5]);
+														f && (delete(t = Object.assign(e, {
+																class: {
+																		...f, ...u.get(d[5])
+																}
+														})).class.active, delete t.class.staffnumber)
+												}
+										}
+										if(Object.keys(t).length ==0){
+												delete(t = Object.assign(e,{class:{...[...u.entries()].find(([cid, course]) => course.roomname.trim() != "" )[1]}})).class.active,delete t.class.staffnumber
+										}
+								}
+								return "studentnumber" in t ? t : e
+						}
+
+            function submitform(e) {
+                    $('#overlay').fadeIn(500);
+										const formData = ($('#multiStepForm').serialize());
+										let p = (JSON.parse(JSON.stringify($("#multiStepForm").serializeArray()))
+											.reduce((e,r)=>Object.assign(e,{[r.name]:r.value}),{}))
+										finish(p);
+										function finish(j){
+												console.log(j);
+                    				let cls = getStudentClass(j).class;console.log(cls);
+														$('#overlay').fadeOut(300);
+														$("form").hide("fast");
+														if (cls){
+															let c = cls;
+															//$("#studentname").html($('firstname').val() + " " + $('lastname').val());                    
+															$("#coursename").html(c.coursename);
+															$("#teacherfullname").html(c.teacherfullname);
+															$("#roomname").html(c.roomname);
+															$("#departmentname").html(c.departmentname);
+														}else{
+															$('#sched *').hide();
+															$('#no').show()
+														}
+														
+														$("#pass").show("fast");
+										}
+								 };
+             function refresh(e){
+						 		$('#sched *').show();
+						 		$('#no').hide()
+                $("#firstname").val("");
+                    $("#lastname").val("");
+                    $("#grade").val("");
+                    $("#studentnumber").val("");
+                    $("#student_name").val("")
+                    
+                    $("#alertbox").hide();
+                    $("#pass").hide("slow");
+                    $('#overlay').fadeOut(500);
+                    $("form").show("slow");
+                    $("#student_name").focus().select();
+               
+                
+            }
+            function selectli(t) {
+                var data = $(t).data();
+                //$(t).parent().find('input').val(data.value)
+                $(t).parent().find('a').removeClass("active");
+                $(t).addClass("active");
+                submitform(this);
+            }
+            
+            function setlist(a, i) {
+						
+                a.map((e, k) => {
+                		let b;
+                    let c = {["data-value"]: e[0],["data-index"]: k,class: "list-group-item list-group-item-action"}
+                    let f = a.findIndex((h) => (h[0] == e[0]));
+                    if (e.length == 2) {
+                        let d = JSON.parse(e[1]);
+                        c = ('sublist' in d)?{...c,...{["data-sublist"]: d.sublist}}:c;
+                        b = $('<a>', c).html(e[0]);//console.log(e[0]);
+                        if ('filter' in d) {
+                            g.sublist = g[d.sublist].pronames.filter(j => j[Object.keys(d.filter)[0]] == d.filter[Object.keys(d.filter)[0]])
+                        } 
+												if ('periods' in d) {
+                        		let per = getperiod().periodnum;//'08/14/2024 2:20 PM'
+                            let p = d.periods.find((e) => e == per);
+														//let p = d.periods.indexOf(per); //!== -1
+														//console.log(p,per,d);
+                        		if(!p)return;
+                        }
+                        if('sublist' in d) {
+                        		g.sublist = g[d.sublist].pronames;
+                            $(b).on("click", function() {
+                                var data = $(this).data();
+                                $(this).parent().find('input').val(data.value)
+                                $(this).parent().find('a').removeClass("active");
+                                $(this).addClass("active");
+                                nextStep(this);
+                            }).appendTo($('#' + i));
+                            return;
+                        }
+												
+                        $(b).on("click", function() {
+                            var data = $(this).data();
+                            $(this).parent().find('input').val(data.value)
+                            $(this).parent().find('a').removeClass("active");
+                            $(this).addClass("active");
+                            //$(this).parent().disabled(true);
+                           	submitform(this);
+                           
+                        }).appendTo($('#' + i));
+
+                    }else{
+                    	b = $('<a>', c).html(e[0]);
+                    	$(b).on("click", function() {
+                          var data = $(this).data();
+                          $(this).parent().find('hidden').val(data.value)
+                          $(this).parent().find('a').removeClass("active");
+                          $(this).addClass("active");
+                          submitform(this);
+                          
+                      }).appendTo($('#' + i));
+                    }
+                    
+                })
+            }
+
+            function setauto(w) {
+                g.all_students.fullnames = w.map(function (t, e) {
+                    return {first: t[3],value: `${t[3]} ${t[5]}`,last: t[5],number: t[2], grade: t[0]}}), 
+                    console.log("Got Students"), 
+                    $("#student_name").autocomplete({
+                    minLength: 3,
+                    source: g.all_students.fullnames,
+                    select: function (t, e) {}
+                }).data("ui-autocomplete")._renderItem = function (t, e) {
+                    let n = $("#myTemplate").template(e);
+                    return $(n).hover(function (t) {
+                        $("#student_name").val(`${e.first} ${e.last}`)
+                    }).on("click", function (t) {
+                        $("#student_name").val(`${e.first} ${e.last}`), $("#firstname").val(e.first), $("#lastname").val(e.last),$("#grade").val(e.grade), $("#studentnumber").val(e.number), selectli($("#studentname"))
+                    }), t.append(n), n
+                }
+            }
+
+            function nextStep(t) {
+            		currentStep++;let index = currentStep;
+                steps.removeClass("active prev");
+                steps.eq(index).addClass("active next");
+                //steps.eq(index).fadeIn('fast');
+            }
+            
+            function prevStep(t) {
+            		currentStep--;let index = currentStep;
+								steps.removeClass("active next");
+                steps.eq(index).addClass("active prev");
+                //steps.eq(index).slideDown('fast');
+            }
+
+            
+        });
+
+    </script>
+    <script id="myTemplate" type="template">
+
+            <a class="list-group-item list-group-item-action" data-value="${first} ${last}">
+              <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">${label}</h6><small class="text-muted"></small>
+              </div>
+              <small class="text-muted">Grade: ${grade}, ID: ${number}</small>
+          </a>
+
+    </script>
+</body>
+
+</html>
