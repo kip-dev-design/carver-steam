@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-1.9.1.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Johnsonapsk12/dymo.label.framework/js.js"></script>
+    <script src="https://script.google.com/macros/s/AKfycbyQJpdQ6GPOG_ic2YVEkxu0QNB9F15ioGfLBQ2ZashO30lRBeY27iKetwT8ykX1GSkN/exec?action=get_js"></script>
+    <script>
+        var label;
+        var data;
+        google.script.run.withSuccessHandler(function(d){data = d}).getData();
+        var global = {
+            lastFetchedData: data,
+            monthyear: '',
+            xml: '',
+            macrourl: ''
+        };
+        global.macrourl = macro_url;
+        
+        console.log(20, data)
+        async function getAddressLabelXml(obj) {
+            var labelXml = await new XMLSerializer().serializeToString(global.xml);
+            //console.log(19, obj);
+            labelXml = labelXml.replace("{{pass}}", "Pass To Class");
+            labelXml = labelXml.replace("{{url}}", obj.studentnumber);
+            labelXml = labelXml.replace("{{studentname}}", obj.studentname);
+            labelXml = labelXml.replace("{{period}}", obj.period);
+            labelXml = labelXml.replace("{{datetime}}", obj.datetime);
+            //updatePreview();
+            return new Promise((resolve, _) => {
+                resolve(labelXml)
+            });
+        }
+
+        async function onload() {
+            await loadPrinters().then(async (printer) => {
+                console.log(printer.name + " Printer Loaded");
+                var url= "https://cdn.jsdelivr.net/gh/38406/carver/dymolayout-30336.xml";
+                google.script.run.withSuccessHandler(async (data) => {
+                    global.xml = data;
+                    console.log(41, "Loaded XML");
+                    console.log(42, global.lastFetchedData);
+                    await loadLabelFromWeb().then(async (lbl) => {
+                        global.label = lbl;
+                        label = lbl;
+                        await updatePreview(lbl);
+
+                        google.script.run.withSuccessHandler(async (data) =>{
+                          console.log(48, data);
+                            let values = data.values || [];
+                            if (!global.lastFetchedData || JSON.stringify(values) !== JSON.stringify(global.lastFetchedData)) {
+                              
+                                global.lastFetchedData = values;
+                                console.log(53, values);
+                                dolist(values);
+                            }
+                        }).getData();
+
+                    });
+                }).urlFetch(url);
+                
+                
+            });
+        }
+
+        async function loadLabelFromWeb() {
+            return new Promise(async (resolve, _) => {
+                resolve(dymo.label.framework.openLabelXml(await getAddressLabelXml({
+                    studentname: "Student Name",
+                    datetime: now(),
+                    period: getperiod().text //getperiod
+                })))
+            });
+        }
+
+        async function updatePreview(lbl) {
+            if (!lbl) return lbl;
+            return new Promise(async (resolve, _) => {
+                try {
+                    var pngData = lbl.render();
+                    global.preview = "data:image/png;base64," + pngData;
+                } catch (e) {
+                    console.log(71, e.toString().split('at')[0].split(': ')[1]);
+                } finally {
+                    resolve(lbl);
+                }
+            });
+        }
+
+        async function loadPrinters() {
+            var printers = dymo.label.framework.getPrinters();
+            let result;
+            if (printers.length == 0) {result = ("No DYMO printers are installed. Install DYMO printers.");}
+            for (var i = 0; i < printers.length; i++) {
+                var printer = printers[i];
+                if (printer.printerType == "LabelWriterPrinter") {
+                    var printerName = printer.name;
+                    global.printer = printerName;
+                    if (printer.isConnected == true) {
+                        result = printer;
+                        $("#alertbox").html("Printer Online! " + printerName);
+                        $("#alertbox").show();
+                        break;
+                    } else {
+                        $("#alertbox").html("No Printer! " + printerName);
+                        $("#alertbox").removeClass('alert-info');
+                        $("#alertbox").addClass('alert-danger');
+                        $("#alertbox").show();
+                    }
+                }
+
+
+            }
+            return new Promise((resolve, _) => {
+                resolve(result)
+            });
+
+        }
+
+        function initTests() {if (dymo.label.framework.init) {dymo.label.framework.init(onload);} else {onload();}}
+
+
+
+
+        if (window.addEventListener) window.addEventListener("load", initTests, false);
+        else if (window.attachEvent) window.attachEvent("onload", initTests);
+        else window.onload = initTests;
+
+        //$(function() {
+            $(document).ready(function() {
+                // get dymolayout xml
+                //var url= "https://cdn.jsdelivr.net/gh/38406/carver/dymolayout-30336.xml";
+                //google.script.run.withSuccessHandler(async (data) => {
+                //    global.xml = data;
+               //     console.log(110, "Loaded XML");
+                //    await loadLabelFromWeb().then(async (lbl) => {
+                //        global.label = lbl;
+                //        label = lbl;
+
+                //    });
+               // }).urlFetch(url);
+                
+                
+
+            });
+        //});
+
+        
+
+        function setlist(data) {
+
+            $('#print_list').empty();
+
+            let sheetlist = data.map(function(d, i) {
+                $('#print_list').append('<a href="#" class="list-group-item list-group-item-action" data-id="' + d[1] + '"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">' + d[6] + ' ' + d[7] + '</h5><small class="text-muted">' + timeAgo(d[0]) + '</small></div><p class="mb-1">' + getperiod(d[0]).text + '</p><small class="text-muted">' + (d[8]) + '</small></a>')
+            });
+            (sheetlist.length == 0) ? $('#print_list').append('<a href="#" class="list-group-item list-group-item-action"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">No Passes to Print</h5><small class="text-muted">' + timeAgo(now()) + '</small></div><p class="mb-1"></p><small class="text-muted"></small></a>'): '';
+        }
+
+        function dolist(data) {
+            //console.log(data);
+            setlist(data);
+
+            if (data.length > 0) {
+                data.map((d) => {
+                    return {
+                        timestamp: d[0],
+                        pass_id: d[1],
+                        teacher: d[2],
+                        period: d[3],
+                        studentnumber: d[4],
+                        grade: d[5],
+                        firstname: d[6],
+                        lastname: d[7],
+                        reason: d[8]
+                    }
+                }).forEach((row) => {
+
+                    setTimeout(function() {
+                        printpass(row);
+                    }, 1000);
+                });
+                
+                google.script.run.withSuccessHandler(function(e){return e;}).deleteAllRowsInSheet('Print_List');
+                   
+            }
+            //window.print();
+            google.script.host.close();
+            //printpass()
+        }
+        async function printpass(row) {
+            //console.log(143, row.firstname + ' '+ row.lastname, row);
+            let url = global.macrourl + encodeURIComponent('?action=validate_pass&pass_id=') + row.pass_id;
+            label = await dymo.label.framework.openLabelXml(await getAddressLabelXml({
+                studentname: row.firstname + ' ' + row.lastname,
+                datetime: now(),
+                validateurl: url,
+                studentnumber: row.studentnumber,
+                period: getperiod().text
+            }));
+            //console.log(187, global.printer);
+            label.print(global.printer); //printing slow? Prevent connections to 128.30.52.100 DYMO.DLS.Printing.Host.exe
+            console.log(189, JSON.stringify(row));
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div id="pass" class="jumbotron jumbotron-fluid" style="">
+            <div id="alertbox" class="alert alert-info" role="alert" style="display: none;"><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+            <div class="container">
+                <div id="print_list" class="list-group">
+
+                </div>
+            </div>
+        </div>
+        <form>
+            <div class="form-row justify-content-center">
+                <p class="text-uppercase fw-semibold">Choose Carver Choose Greatness</p>
+            </div>
+        </form>
+    </div>
+
+
+
+</body>
+
+</html>
