@@ -38,8 +38,9 @@
       "functionName": "HighlightDups",
       "defaultShortcut": "Ctrl+Alt+Shift+9"
     }]
+  },
+  {
+    "services": ["Gmail", "Drive"]
   }
 }
-// Services
-// -Gmail
-// -Drive
+
