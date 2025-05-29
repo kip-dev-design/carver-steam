@@ -1,0 +1,371 @@
+<html>
+
+  <head>
+
+
+    <base target="_top">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-1.9.1.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Johnsonapsk12/dymo.label.framework/js.js"></script>
+    <script src="https://script.google.com/macros/s/AKfycbxZbYqJzUkqaDVoUyF4YVansv6I8qTIyl4oBXa3Iphlaea0eobDlUtZbeiyLC_YIApo/exec?action=get_js"></script>
+    <script>
+    	var storagename = "pass_dash_global";
+      var debug = !1;
+      var label;
+      var global = {
+        lastFetchedData: null,
+        workdate:null,
+        lastcheck:null,
+        monthyear: null,
+        label:null,
+        xml: null,
+        preview:null,
+        macrourl: null,
+        printlist: {}
+      };
+      global.macrourl = macro_url;
+      
+      function loadStorage(a) {
+          let e = localStorage.getItem(a);
+          return e ? JSON.parse(e) : null
+      }
+      function saveStorage(a) {sessionStorage[a] = global;localStorage.setItem(a, JSON.stringify(global))}
+
+      async function getAddressLabelXml(obj) {
+        var labelXml = await new XMLSerializer().serializeToString(global.xml);
+        //console.log(19, obj);
+        labelXml = labelXml.replace("{{pass}}", "Pass To Class");
+        labelXml = labelXml.replaceAll("{{url}}", obj.validateurl);
+        labelXml = labelXml.replace("{{studentname}}", obj.studentname);
+        labelXml = labelXml.replace("{{period}}", obj.period);
+        labelXml = labelXml.replace("{{datetime}}", obj.datetime);
+        //updatePreview();
+        return new Promise((resolve, _) => {
+          resolve(labelXml)
+        });
+      }
+
+      async function onload() {
+        loadPrinters().then(async (printer) => {
+          if ("undefined" != typeof printer) {
+            debug && console.log(printer.name + " Printer Loaded")
+          }
+          updatePreview(label);
+          check();
+        });
+      }
+
+      async function loadLabelFromWeb() {
+        return new Promise(async (resolve, _) => {
+          resolve(dymo.label.framework.openLabelXml(await getAddressLabelXml({
+            studentname: "Student Name",
+            datetime: now(),
+            period: getperiod().text
+          })))
+        });
+      }
+
+      function updatePreview(lbl) {
+        if (!lbl) return lbl;
+        try {
+          var pngData = lbl.render();
+          global.preview = "data:image/png;base64," + pngData;
+        } catch (e) {
+          debug && console.log(52, e.toString().split('at')[0].split(': ')[1]);
+        } finally {
+          return lbl;
+        }
+      }
+
+      async function loadPrinters() {
+        var printers = dymo.label.framework.getPrinters();
+        let result;
+        if (printers.length == 0) {
+          result = ("No DYMO printers are installed. Install DYMO printers.");
+          //return;
+        }
+        for (var i = 0; i < printers.length; i++) {
+          var printer = printers[i];
+          if (printer.printerType == "LabelWriterPrinter") {
+            var printerName = printer.name;
+            global.printer = printerName;
+            
+            if (printer.isConnected) {
+            	debug && console.log(printer);
+              result = printer;
+              $("#alertbox").html("Printer Online! " + printerName);
+              $("#alertbox").addClass('alert-info');
+              $("#alertbox").removeClass('alert-danger');
+              $("#alertbox").show();
+              break;
+            } else {
+              $("#alertbox").html("No Printer! " + printerName);
+              $("#alertbox").removeClass('alert-info');
+              $("#alertbox").addClass('alert-danger');
+              $("#alertbox").show();
+            }
+
+
+
+          }
+
+
+        }
+        return new Promise((resolve, _) => {
+          resolve(result)
+        });
+
+      }
+
+      function initTests() {
+        if (dymo.label.framework.init) {
+          dymo.label.framework.init(onload);
+        } else {
+          onload();
+        }
+      }
+
+
+      if (window.addEventListener) window.addEventListener("load", initTests, false);
+      else if (window.attachEvent) window.attachEvent("onload", initTests);
+      else window.onload = initTests;
+
+      $(function() {
+        $(document).ready(function() {
+          $.ajax({
+            type: "get",
+            url: "https://cdn.jsdelivr.net/gh/38406/carver/dymolayout-30336.xml",
+            success: function(data) {
+              global.xml = data;
+              debug && console.log(104, "Loaded XML");
+              loadLabelFromWeb().then(async (lbl) => {
+                global.label = lbl;
+                label = lbl;
+              });
+
+            },
+            error: function(xhr, status) {
+              console.log(status);
+            }
+          });
+          
+          (loadStorage(storagename))?global=loadStorage(storagename):console.log("no storage");
+          debug && console.log(loadStorage(storagename));
+          debug && console.log(window, localStorage, sessionStorage);
+          debug && console.log(getperiod())
+          $('.container h6').html(`${getperiod().text} <span class="badge badge-warning">0</span>`);
+					
+					
+
+        });
+      });
+
+			function scrolllast(){
+				let s = $("#print_list")[0].scrollHeight;
+			
+							//$('html, body').animate({scrollTop: $(document).height()+$(window).height()},1400, "easeOutQuint" );
+							//$(item).animate({scrollintoview:true},1400, "easeOutQuint" );
+							//$(item).scrollintoview();
+							//item.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+							//item.scroll({top: $(document).height(),behavior: "smooth",});
+							$("html, body").animate({ scrollTop: s }, "easeOutQuint");
+							//$("body, html").animate({ scrollTop: $(document).height()}, 400)
+
+					}
+
+      function check() {
+      	let f=null;
+        fetchdata();
+        const interval = setInterval(() => {
+          //||!getperiod().first20
+          if (!getperiod().school) {
+            clearInterval(interval);
+            setTimeout(check(), 60e3);
+            return;
+          }
+          global.lastcheck = Math.round(Date.now()/1E3);
+          fetchdata(), debug && console.log("Fetch Check");
+        }, 7e3);
+
+
+      }
+      
+			
+      
+      function fetchdata() {
+        $.ajax({
+          url: global.macrourl + "?action=latest_pass_list",
+          type: "GET",
+          success: function(data, textStatus, jqXHR) {
+            let values = data || [];
+            if (!global.lastFetchedData || JSON.stringify(values) !== JSON.stringify(global.lastFetchedData)) {
+
+              global.lastFetchedData = values;
+              debug && console.log(132, values);
+              dolist(values);
+              //scrolllast();
+            }
+
+          }
+        });
+      }
+			
+      function fetchdata2() {
+            $.ajax({
+                url: sheeturl("/values/Print_List?alt=json"),
+                type: "GET",
+                success: function(data, textStatus, jqXHR) {
+                    let values = data.values || [];
+                    if (!global.lastFetchedData || JSON.stringify(values) !== JSON.stringify(global.lastFetchedData)) {
+
+                        global.lastFetchedData = values;
+                        debug && console.log(132, values);
+                        dolist(values);
+                    }
+                    setTimeout(check, 4e3);
+                }
+            });
+        }
+
+      function setlist(data) {
+
+        $('#print_list').empty();
+
+        let sheetlist = data.map(function(d, i) {
+          //debug && console.log(d);
+          debug && console.log((d.pass_id) in global.printlist);
+          debug && console.log(global.printlist);
+          if (!(d.pass_id in global.printlist)) {
+            let item = $("<a>", {
+                class: "list-group-item list-group-item-action",
+                ["data-time"]: d.timestamp,
+                ["data-id"]: d.pass_id,
+                ["data-period"]: d.period,
+                ["data-studentnumber"]: d.studentnumber,
+                ["data-grade"]: d.grade,
+                ["data-firstname"]: d.firstname,
+                ["data-lastname"]: d.lastname,
+                ["data-reason"]: d.reason
+              })
+              .append($("<div>", {
+                  class: "d-flex w-100 justify-content-between"
+                })
+                .append($("<h5>", {
+                  class: "mb-1"
+                }).html(`${d.firstname} ${d.lastname}`))
+                .append($("<small>", {
+                  class: "text-muted"
+                }).html(`${timeAgo(d.timestamp)}`))
+              )
+              .append($("<p>", {
+                class: "mb-1"
+              }).html(`${getperiod(d.timestamp).text}`))
+              .append($("<small>", {
+                class: "text-muted"
+              }).html(`${(d.reason)}`));
+
+            $('#print_list').append(item);
+						console.log(data.length, i)
+						//$(item).scrollintoview();
+						
+
+            item.on("click", async function(e) {
+              e.preventDefault();
+              let data = $(this).data();
+
+              $(this).prop("disabled", true);
+              global.printlist[d.pass_id] = data;
+              debug && console.log(data, global.printlist);
+              printpass(data);
+              $(this).hide();
+              debug && console.log("Button click for print");
+
+            })
+          }
+        });
+				scrolllast();
+        (sheetlist.length == 0) ? $('#print_list').append('<a disabled class="list-group-item list-group-item-action"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">No Passes to Print</h5><small class="text-muted">' + timeAgo(now()) + '</small></div><p class="mb-1"></p><small class="text-muted"></small></a>'): '';
+      }
+			
+      function setlist2(data) {
+
+            $('#print_list').empty();
+
+            let sheetlist = data.map(function(d, i) {
+                if (!(d[1] in global.printlist)) {
+                let item = $("<a>",{class:"list-group-item list-group-item-action",["data-time"]:d[0],["data-id"]:d[1],["data-period"]:d[3],["data-studentnumber"]:d[4],["data-grade"]:d[5],["data-firstname"]:d[6],["data-lastname"]:d[7],["data-reason"]:d[8]})
+                .append($("<div>",{class:"d-flex w-100 justify-content-between"})
+                        .append($("<h5>",{class:"mb-1"}).html(`${d[6]} ${d[7]}`))
+                        .append($("<small>",{class:"text-muted"}).html(`${timeAgo(d[0])}`))
+                       )
+                .append($("<p>",{class:"mb-1"}).html(`${getperiod(d[0]).text}`))
+                .append($("<small>",{class:"text-muted"}).html(`${(d[8])}`));
+                
+                $('#print_list').append(item);
+                
+                item.on("click",async function(e){
+                    e.preventDefault();
+                    let data = $(this).data();
+                    console.log(data);
+                    $(this).disabled = true;
+                    printpass(data);
+                    console.log("Button click for print");
+                    
+                })
+            }
+            });
+            (sheetlist.length == 0) ? $('#print_list').append('<a href="#" class="list-group-item list-group-item-action"><div class="d-flex w-100 justify-content-between"><h5 class="mb-1">No Passes to Print</h5><small class="text-muted">' + timeAgo(now()) + '</small></div><p class="mb-1"></p><small class="text-muted"></small></a>'): '';
+        }
+
+      function dolist(data) {
+        //console.log(data);
+        $('.container h6 span').html(data.length);
+        setlist(data);
+      }
+
+      async function printpass(row) {
+        let url = global.macrourl + encodeURIComponent('?action=validate_pass&pass_id=') + row.pass_id;
+        label = await dymo.label.framework.openLabelXml(await getAddressLabelXml({
+          studentname: row.firstname + ' ' + row.lastname,
+          datetime: now(),
+          validateurl: url,
+          studentnumber: row.studentnumber,
+          period: getperiod().text
+        }));
+        //printing slow? Prevent connections to 128.30.52.100 DYMO.DLS.Printing.Host.exe
+        label.print(global.printer);
+        console.log(189, JSON.stringify(row));
+				
+				saveStorage(storagename);
+
+
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="pass" class="jumbotron jumbotron-fluid" style="">
+        <div id="alertbox" class="alert alert-info" role="alert" style="display: none;"><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+        <div class="container">
+          <h6>Carver <span class="badge badge-secondary">New</span></h6>
+          <div id="print_list" class="list-group">
+
+          </div>
+        </div>
+      </div>
+      <form>
+        <div class="form-row justify-content-center">
+          <p class="text-uppercase fw-semibold">Choose Carver Choose Greatness</p>
+        </div>
+      </form>
+    </div>
+
+
+
+  </body>
+
+</html>
